@@ -45,6 +45,13 @@ def evaluarllamada(t):
     print ('iii) Eliminar calificacion')
     subopcion=pdenuev4(3)
     if subopcion==1:
+        print ("ID's de supervisor:")
+        cur.close()
+        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        
+                           
+
+                    
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.id='"+str(t)+"')")
         valid= cur.fetchone()
@@ -72,7 +79,7 @@ def evaluarllamada(t):
             elec =cur.fetchall()
             print(tabulate(elec,headers=["Nombre archivo", "ID Agente", "ID Tel. Cliente", "Fecha y Hora", "Duracion (seg)", "Transcripcion", "Motivo de llamda", "Saliente"]))
             print()
-            apro=input("Inserte (1) si desea aprobar la llamada, de manera contraria inserte (0): ")
+            apro=input("Inserte (1) si desea aprobar la llamada, de manera contraria incerte (0): ")
             if apro==1:
 
                 cur.execute("insert into aprobacion(nombre_archivo, id_supervisor, aprobacion)values('"+str(select)+"',"+str(sup)+",'True');" )
@@ -82,7 +89,6 @@ def evaluarllamada(t):
             print()
             print('La llamada a sido calificada satisfactoriamente')
     if subopcion==2:
-        
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
