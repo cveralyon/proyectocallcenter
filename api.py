@@ -49,10 +49,10 @@ def evaluarllamada(t):
         cur=conn.cursor()
         cur.close()
         cur=conn.cursor()
-        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        cur.execute("SELECT id, nombre, apellido from supervisores where id_tennant="+str(t))
         content=cur.fetchall()
-        for i in content:
-            print (i[0])
+        print(tabulate(content,headers=["ID", "Nombre","Apellido"]))
+        
 
                     
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
@@ -95,10 +95,10 @@ def evaluarllamada(t):
         print ("ID's de supervisor:")
         cur=conn.cursor()
         cur.close()
-        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        cur.execute("SELECT id, nombre, apellido from supervisores where id_tennant="+str(t))
         content=cur.fetchall()
-        for i in content:
-            print (i[0])
+        print(tabulate(content,headers=["ID", "Nombre","Apellido"]))
+        
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -127,10 +127,9 @@ def evaluarllamada(t):
         print ("ID's de supervisor:")
         cur=conn.cursor()
         cur.close()
-        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        cur.execute("SELECT id, nombre, apellido from supervisores where id_tennant="+str(t))
         content=cur.fetchall()
-        for i in content:
-            print (i[0])
+        print(tabulate(content,headers=["ID", "Nombre","Apellido"]))
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
