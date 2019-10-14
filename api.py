@@ -5,7 +5,6 @@ print ()
 print ("-----------------------------Bienvenido al portal Crossnot-------------------------------")
 print ()
 
-print("hola juako")
 
 def sql(accion,tabla,lista_columnas,lista_valores,condicion=0):
     columnavalores=""
@@ -42,11 +41,12 @@ def evaluarllamada(t):
     print()
     print ("Lista de subopciones:")
     print ('i) Agregar calificacion')
-    print ('ii) Editar calificacion')
     print ('iii) Eliminar calificacion')
+    print ('ii) Editar calificacion')
     subopcion=pdenuev4(3)
     if subopcion==1:
         print ("ID's de supervisor:")
+        cur=conn.cursor()
         cur.close()
         cur=conn.cursor()
         cur.execute("SELECT id from supervisores where id_tennant="+str(t))
@@ -59,12 +59,9 @@ def evaluarllamada(t):
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.id='"+str(t)+"')")
         valid= cur.fetchone()
         if valid[0]==True:
-            print()
             print("Tu identificacion fue validada con exito")
-            print()
             cur.execute("select s.id, t.nombre, s.nombre, s.apellido from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+";" )
             superv=cur.fetchall()
-            print()
             print(tabulate(superv,headers=["ID", "Tennant", "Nombre", "Apellido"]))
             
             cur.execute("select l.nombre_archivos from llamadas l, tennant t, agente a where t.id=a.id_tennant and a.id=l.id_agente and t.id=1 and not exists (select nombre_archivo from aprobacion ap where ap.nombre_archivo=l.nombre_archivos)")
@@ -76,7 +73,7 @@ def evaluarllamada(t):
             for i in llamadassinaprovar[0]:
                 if select in i[0]:
                     revision=1
-            if revision==1:
+            if revision==0:
                 print ("llamada no puede ser calificada, porque no se encuentra en la lista de llamadas sin calificar")
                 return None
             #revisar si la llamada ingresada esta en la lista de no calificadas, si existe y si corresponde al tennant.
@@ -95,6 +92,13 @@ def evaluarllamada(t):
             print()
             print('La llamada a sido calificada satisfactoriamente')
     if subopcion==2:
+        print ("ID's de supervisor:")
+        cur=conn.cursor()
+        cur.close()
+        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        content=cur.fetchall()
+        for i in content:
+            print (i[0])
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -120,6 +124,13 @@ def evaluarllamada(t):
             print('La llamada a sido calificada satisfactoriamente')
             
     if subopcion==3:
+        print ("ID's de supervisor:")
+        cur=conn.cursor()
+        cur.close()
+        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        content=cur.fetchall()
+        for i in content:
+            print (i[0])
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -774,7 +785,7 @@ def verLlamada(t,subopcion):
             aux1=['nombre_archivos', 'id_agente', 'id_tel_cliente', 'fecha_hora', 'duracion_seg', 'transcripcion', 'motivo_llamada', 'saliente']
             nuevo=input("Ingrese el/la nuev@ "+str(aux1[llam2-1])+":")
             nombcol=aux1[llam2-1]
-            cur.execute("update llamadas set "+nombcol+"='"+nuevo+"'  where nombre_archivos='"+llam+"'")
+            cur.execute("update llamadas set "+nombcol+"="+nuevo+"where nombre_archivos='"+llam+"'")
             conn.commit()
             print("Cambio guardado exitosamente")
         
