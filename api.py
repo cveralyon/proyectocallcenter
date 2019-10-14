@@ -72,7 +72,7 @@ def evaluarllamada(t):
             elec =cur.fetchall()
             print(tabulate(elec,headers=["Nombre archivo", "ID Agente", "ID Tel. Cliente", "Fecha y Hora", "Duracion (seg)", "Transcripcion", "Motivo de llamda", "Saliente"]))
             print()
-            apro=input("Inserte (1) si desea aprobar la llamada, de manera contraria incerte (0): ")
+            apro=input("Inserte (1) si desea aprobar la llamada, de manera contraria inserte (0): ")
             if apro==1:
 
                 cur.execute("insert into aprobacion(nombre_archivo, id_supervisor, aprobacion)values('"+str(select)+"',"+str(sup)+",'True');" )
@@ -82,6 +82,7 @@ def evaluarllamada(t):
             print()
             print('La llamada a sido calificada satisfactoriamente')
     if subopcion==2:
+        
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -699,6 +700,7 @@ def eliminarEntidad(tennant,entidad):
 def verLlamada(t,subopcion):            
         if subopcion==1:
             narch= input("Ingrese el nombre de archivo de la llamada que desea ver: ")
+            print ()
             conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
             cur=conn.cursor()
             cur.execute("select l.eliminar_l from llamadas l where nombre_archivos ='"+narch+"';")
@@ -709,6 +711,7 @@ def verLlamada(t,subopcion):
                 llamadas =cur.fetchall()
                 print(tabulate(llamadas,headers=["Nombre archivo", "ID Agente", "ID Tel. Cliente", "Fecha y Hora", "Duracion (seg)", "Transcripcion", "Motivo de llamda", "Saliente"]))
                 conn.commit()
+                print ()
             else:
                     print("La llamada ingresada no existe o fue eliminada")
             
