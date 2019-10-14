@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 14 11:23:17 2019
-
-@author: cristianvera
-"""
-
 import psycopg2
 from tabulate import tabulate
 from string import ascii_letters
@@ -215,7 +207,7 @@ def manejarcampana(t):
     content=cur.fetchall()    
     print ()   
     cur=conn.cursor()
-    cur.execute("select c.id, c.nombre from campana c where c.id_tennant='"+str(t)+"' and c.eliminar_ca='False';")
+    cur.execute("select c.id, c.nombre from campana c where c.id_tennant='"+str(t)+"' and c.eliminar_ca=False;")
     aprov =cur.fetchall()
     print(tabulate(aprov,headers=["ID Campaña", "Nombre"]))
     print()
@@ -227,11 +219,11 @@ def manejarcampana(t):
                 
     subopcion=pdenuev4(3)
     if subopcion==1:
-        nombrecamp=input(" Ingrese el nombre de la campaña:" )
-
+        idcamp=input("Ingrese el ID de la campaña que desea agregar (este cumplir con que sea un numero con al menos 3 digitos y sea mayor a 100): ")
         fechainicio=input("Ingrese la fecha de inicio de la campaña (Formato: AAAA/MM/DD) : ")
         fechafin=input("Ingrese la fecha de termino de la campaña (Formato: AAAA/MM/DD) : ")
-        cur.execute("insert into campana(id_tennant, fecha_inicio, fecha_fin, nombre)values("+str(t)+",'"+str(fechainicio)+"','"+str(fechafin)+"','"+str(nombrecamp)+"');")
+        nombrecamp=input(" Ingrese el nombre de la campaña:" )
+        cur.execute("insert into campana(id_tennant, fecha_inicio, fecha_fin, nombre)values("+str(idcamp)+",'"+str(fechainicio)+"','"+str(fechafin)+"','"+str(nombrecamp)+"');")
         conn.commit()
         print("Campaña agregada con exito")
     if subopcion==2:
@@ -248,14 +240,14 @@ def manejarcampana(t):
         print()
         delete1=pdenuev4(2)
         if delete1==1:
-            cur.execute("select c.eliminar_ca from  campana c where c.id ="+str(eliminar)+";")
+            cur.execute("select c.eliminar_ca from  campana c where c.id ="+eliminar+";")
             eliminar1=cur.fetchall()
-            if eliminar1[0][0]==False:
-                cur.execute("update campana c set eliminar_ca=True where c.id="+str(eliminar)+";")
+            if eliminar[0][0]==False:
+                cur.execute("update campana set eliminar_ca='True' where c.id="+eliminar1+";")
                 conn.commit()
-                print("campaña eliminada con exito")
+                print("Llamada eliminada con exito")
             else:
-                print("La campaña ingresada no existe o ya a sido eliminada")
+                print("La llamada ingresada no existe o ya a sido eliminada")
 
         elif delete1==2:
             print("Operacion cancelada")
@@ -268,11 +260,11 @@ def manejarcampana(t):
         cur.execute("select c.id, c.id_tennant, c.fecha_inicio, c.fecha_fin, c.nombre from campana c where c.id_tennant='"+str(t)+"' and c.eliminar_ca=False and c.id="+str(llam)+";")
         aprov =cur.fetchall()
         print(tabulate(aprov,headers=["(1)ID Campaña", "(2)ID Tennant", "(3)Fecha inicio", " (4)Fecha Termino", "(5)Nombre Campaña"]))
-        llam2=pdenuev4(5)
+        llam2=pdenuev4(8)
         aux1=['id', 'id_tennant', 'fecha_inicio', 'fecha_fin','nombre']
         nuevo=input("Ingrese el/la nuev@ "+str(aux1[llam2-1])+":")
         nombcol=aux1[llam2-1]
-        cur.execute("update campana  set "+nombcol+"='"+nuevo+"' where id="+llam+";")
+        cur.execute("update campana set "+nombcol+"="+nuevo+"where id='"+llam+"'")
         conn.commit()
         print("Cambio guardado exitosamente")
 
@@ -292,6 +284,11 @@ def listatennants(imprimir=0):
     cur.close()
     conn.close()
     return l
+
+
+
+
+
 
 def siono():
     print()
@@ -589,7 +586,8 @@ def agregarEntidad(entidad,t=0):
             break
         if apellido=="0": return
         a=0
-    
+    if idtennant=='0':
+        return 
     if entidad=="agente" or entidad=="tennant":
         optelefono="telefono"
         while True:
@@ -653,7 +651,6 @@ def agregarEntidad(entidad,t=0):
         
 def eliminarEntidad(tennant,entidad):
     li= listaIdEntidadSegunTennant(entidad,tennant)
-    
     while True:
         try:
             a=0
@@ -697,54 +694,7 @@ def eliminarEntidad(tennant,entidad):
     cur.execute(texto)
     conn.commit()
     cur.close()
-
-"""def verLlamada(t):
-    narch= input("Ingrese el nombre de archivo de la llamada que desea ver: ")
-    conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
-    cur=conn.cursor()
-    cur.execute("select t2.nombre_archivos, t2.id_agente, t2.id_tel_cliente, t2.fecha_hora, t2.duracion_seg, t2.transcripcion, t2.motivo_llamada, t2.saliente from (((llamadas l join telefono_cliente tc on l.id_tel_cliente= tc.id ) as t0 join agente a on t0.id_agente=a.id)as t1 join clientes c on c.id= t1.id_cliente) as t2 join tennant t on t2.id_tennant=t.id where t.id="+str(t)+"  and t2.nombre_archivos='"+narch+"'")
-    llamadas =cur.fetchall()
-    print(tabulate(llamadas,headers=["Nombre archivo", "ID Agente", "ID Tel. Cliente", "Fecha y Hora", "Duracion (seg)", "Transcripcion", "Motivo de llamda", "Saliente"]))
     
-def agregarLlamada(t):
-    print("Tipo de llamada:")
-    print("\t1) Saliente") 
-    print("\t2) Entrante")
-    sal=pdenuev4(2)
-    conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
-    cur=conn.cursor()
-    if sal==1:
-        campana = input("Ingrese el Id de la campaña a la cual pertenece la llamada: ")
-        nombarch= input("Ingrese el nombre de archivo de la llamada:")
-        agente= input("Ingrese el ID del agente que realizo la llamada:" )
-        tel = input("Ingrese el ID del telefono que recibio la llamada: ")
-        fecha = input("Ingrese la fecha en la que se realizo la llamada(AAAA/MM/DD):")
-        hora = input("Ingrese la hora en la que se realizo la llamada(HH:MM:SS):")
-        dur = input("Ingrese la cantidad de segundos que duro la llamada:")
-        trans = input("Ingrese la transcipcion de la llamada: ")
-        horafecha = fecha+" "+hora
-        saliente ="true"
-        
-        cur.execute("insert into llamadas(nombre_archivos, id_agente, id_tel_cliente, id_campana, fecha_hora, duracion_seg, transcripcion, saliente)values(%s,%s,%s,%s,%s,%s,%s,%s);",(nombarch, agente, tel, campana, horafecha, dur, trans, saliente))
-        conn.commit()
-        print("Llamada registrada exitosamente")
-    elif sal==2:
-        motivo = input("Ingrese el motivo por el cual se llamo: ")
-        nombarch= input("Ingrese el nombre de archivo de la llamada:")
-        agente= input("Ingrese el ID del agente que recibio la llamada:" )
-        tel = input("Ingrese el ID del telefono que realizo la llamada: ")
-        fecha = input("Ingrese la fecha en la que se realizo la llamada(AAAA/MM/DD):")
-        hora = input("Ingrese la hora en la que se realizo la llamada(HH:MM:SS):")
-        dur = input("Ingrese la cantidad de segundos que duro la llamada:")
-        trans = input("Ingrese la transcipcion de la llamada: ")
-        horafecha = fecha+" "+hora
-        saliente ="false"
-        cur.execute("insert into llamadas(nombre_archivos, id_agente, id_tel_cliente, fecha_hora, duracion_seg, transcripcion,motivo_llamada, saliente)values(%s,%s,%s,%s,%s,%s,%s,%s);",(nombarch, agente, tel, horafecha, dur, trans,  motivo, saliente))
-        conn.commit()
-        print("Llamada registrada exitosamente")
-    cur.close()
-    conn.close()
-    return"""
 
 def verLlamada(t,subopcion):            
         if subopcion==1:
@@ -753,13 +703,12 @@ def verLlamada(t,subopcion):
             cur=conn.cursor()
             cur.execute("select l.eliminar_l from llamadas l where nombre_archivos ='"+narch+"';")
             eliminado=cur.fetchall()
-            print ()
+            #print ( type(eliminado[0][0]))
             if eliminado[0][0]==False:
                 cur.execute("select t2.nombre_archivos, t2.id_agente, t2.id_tel_cliente, t2.fecha_hora, t2.duracion_seg, t2.transcripcion, t2.motivo_llamada, t2.saliente from (((llamadas l join telefono_cliente tc on l.id_tel_cliente= tc.id ) as t0 join agente a on t0.id_agente=a.id)as t1 join clientes c on c.id= t1.id_cliente) as t2 join tennant t on t2.id_tennant=t.id where t.id="+str(t)+" and t2.nombre_archivos='"+narch+"' and t2.eliminar_l=False")
                 llamadas =cur.fetchall()
                 print(tabulate(llamadas,headers=["Nombre archivo", "ID Agente", "ID Tel. Cliente", "Fecha y Hora", "Duracion (seg)", "Transcripcion", "Motivo de llamda", "Saliente"]))
                 conn.commit()
-                print()
             else:
                     print("La llamada ingresada no existe o fue eliminada")
             
@@ -829,7 +778,7 @@ def verLlamada(t,subopcion):
             if delete1==1:
                 conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
                 cur=conn.cursor()
-                cur.execute("select l.eliminar from llamadas l where nombre_archivos ='"+delete+"';")
+                cur.execute("select l.eliminar_l from llamadas l where nombre_archivos ='"+delete+"';")
                 eliminar=cur.fetchall()
                 if eliminar[0][0]==False:
                     cur.execute("update llamadas set eliminar_l=true where nombre_archivos='"+delete+"'")
@@ -840,56 +789,10 @@ def verLlamada(t,subopcion):
 
             elif delete1==2:
                 print("Operacion cancelada")
-
-"""def otrawea():
-    if sp==3:
-        llam=input("Ingrese el nombre de archivo de la llamada que desea modificar:  ")
-        cur.execute("select t2.nombre_archivos, t2.id_agente, t2.id_tel_cliente, t2.fecha_hora, t2.duracion_seg, t2.transcripcion, t2.motivo_llamada, t2.saliente from (((llamadas l join telefono_cliente tc on l.id_tel_cliente= tc.id ) as t0 join agente a on t0.id_agente=a.id)as t1 join clientes c on c.id= t1.id_cliente) as t2 join tennant t on t2.id_tennant=t.id where t2.nombre_archivos= '"+llam+"' ;")
-        llam1=cur.fetchall()
-        print(tabulate(llam1,headers=["(1)Nombre archivo", "(2)ID Agente", "(3)ID Tel. Cliente", "(4)Fecha y Hora", "(5)Duracion (seg)", "(6)Transcripcion", "(7)Motivo de llamda", "(8)Saliente"]))
-        llam2=pdenuev4(8)
-        aux1=['nombre_archivos', 'id_agente', 'id_tel_cliente', 'fecha_hora', 'duracion_seg', 'transcripcion', 'motivo_llamada', 'saliente']
-        nuevo=input("Ingrese el/la nuev@ "+str(aux1[llam2-1])+":")
-        nombcol=aux1[llam2-1]
-        cur.execute("update llamadas set "+nombcol+"="+nuevo+"where nombre_archivos='"+llam+"'")
-        conn.commit()
-        print("Cambio guardado exitosamente")
-    elif sp==4:
-        delete=input("Ingrese el nombre de archivo de la llamada que desea eliminar : ")
-        print()
-        print()
-        print("---------Esta segur@ de que desea eliminar la llamada "+delete+"? Una vez realizada esta accion se perderan todos los datos relacionados con la llamada--------" )
-        print()
-        print()
-        print("Confirme la eliminacion completa de la llamada "+delete+": ")
-        print("\t1 para confirmar que desea eliminar la llamada")
-        print("\t2 para deshaser esta accion")
-        delete1=pdenuev4(2)
-        if delete1==1:
-            cur.execute("delete from aprobacion where nombre_archivo ='"+delete+"';")
-            cur.execute("delete from respuesta where llamada='"+delete+"';")
-            cur.execute("delete from llamadas where nombre_archivos='"+delete+"';")
-            conn.commit()
-            print("Llamada eliminada con exito")
-        elif delete1==2:
-            print("Operacion cancelada")
-            """
-
-
-    
-
-
+                
 def ejecutarConsulta(t,opcion,subopcion):
     if opcion==1:
         verLlamada(t,subopcion)
-#        if subopcion==1:
- #           verLlamada(t)
-  #      if subopcion==2:
-   #         agregarLlamada(t)
-    #    if subopcion==3:
-     #       editarLlamada(t)
-      #  if subopcion==4:
-       #     eliminarLlamada(t)
     if opcion==2:
         evaluarllamada(t)
     if opcion==3:
@@ -964,11 +867,12 @@ def optionSelect(opciones,t):
     return p
 
 def suboptionSelect(t,opcion):
-    largo=range(len(opciones[opcion-1][1]))
-    suboptstr=[]
-    for i in largo:
-        b= opciones[opcion-1][1][i]
-        suboptstr.append(b)
+    if opcion!=1 or opcion!=3 or opcion!=2:
+        largo=range(len(opciones[opcion-1][1]))
+        suboptstr=[]
+        for i in largo:
+            b= opciones[opcion-1][1][i]
+            suboptstr.append(b)
     while True:
         try:
             for i in suboptstr:
@@ -983,9 +887,6 @@ def suboptionSelect(t,opcion):
             print ("La subopcion no existe, intente nuevamente")
             continue
     return p
-
-
-
 
 
 def ciclo0():
@@ -1016,17 +917,13 @@ def ciclo3(opcion,t):
     return ciclo3(opcion,t)
     
 
-    '''
 
-    '''
-
-    
     
 numbers=[1,2,3,4,5,6,7,8,9,0]  
 numbersstr=["1","2","3","4","5","6","7","8","9","0"]
 opciones=[['Ver llamadas',["i) Ver llamadas","ii) Agregar llamada","iii) Editar llamada","iv) Eliminar llamada"]],\
 ['Evaluar llamadas',["i) Agregar calificacion","ii) Editar calificacion","iii) Eliminar calificacion"]],\
-['Manejar campanas',["","Si desea volver al menu princiapl presione 0 si no, presione 1...",""]],\
+['Manejar campanas',["i) Agregar camapana","ii) Editar campana","iii) Eliminar campana"]],\
 ['Manejar tipificaciones',["i) Agregar tipificacion","ii) Asociar tipificacion","iii) Eliminar tipificacion","iv) Editar tipificacion","v) Editar Asociacion"]],\
 ['Manejar agentes',["i) Agregar agente","ii) Editar agente","iii) Eliminar agente"]],\
 ['Manejar supervisores',["i) Agregar supervisor","ii) Editar informacion","iii) Eliminar supervisor"]],\
@@ -1034,20 +931,3 @@ opciones=[['Ver llamadas',["i) Ver llamadas","ii) Agregar llamada","iii) Editar 
 
 
 ciclo0()
-
-
-def generadoraprobaciones():
-    conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
-    cur=conn.cursor()
-    cur.execute("select nombre_archivos from llamadas l, tennant t where t.id= "++"not exists (select nombre_archivo from aprobacion ap where ap.nombre_archivo=l.nombrearchivos) ")
-    llamadas =cur.fetchall()
-    print ("Selecione llamada que desea evaluar")
-    for i in llamadas[0]:
-        print (i[0])
-        
-
-
-
-
-
-    
