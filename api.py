@@ -843,15 +843,7 @@ def ejecutarConsulta(t,opcion,subopcion):
             eliminarEntidad(t,"tennant")
 
 
-def sql(accion,tabla,lista_columnas,lista_valores,condicion=0):
-    if accion.lower()=="update":
-        columnavalores=""
-        for i in range(len(lista_columnas)):
-            a=str(lista_columnas[i])+"="+str(lista_valores[i])+", "
-            columnavalores=columnavalores+a
-        if not condicion==0:
-            sentencia= accion+" " +tabla+" "+"set "+columnavalores+" where "+condicion
-            return sentencia
+
 
 def optionSelect(opciones,t):
     opcionesstr=[]
