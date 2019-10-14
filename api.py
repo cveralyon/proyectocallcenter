@@ -91,6 +91,13 @@ def evaluarllamada(t):
             print()
             print('La llamada a sido calificada satisfactoriamente')
     if subopcion==2:
+        print ("ID's de supervisor:")
+        cur=conn.cursor()
+        cur.close()
+        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        content=cur.fetchall()
+        for i in content:
+            print (i[0])
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -116,6 +123,13 @@ def evaluarllamada(t):
             print('La llamada a sido calificada satisfactoriamente')
             
     if subopcion==3:
+        print ("ID's de supervisor:")
+        cur=conn.cursor()
+        cur.close()
+        cur.execute("SELECT id from supervisores where id_tennant="+str(t))
+        content=cur.fetchall()
+        for i in content:
+            print (i[0])
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
         cur.execute("SELECT EXISTS(select * from supervisores s join tennant t on t.id=s.id_tennant where s.id="+str(sup)+" and t.nombre='"+str(content[t-1][1])+"')")
         valid= cur.fetchone()
@@ -325,7 +339,6 @@ def tennantSelect(listaidtennants):
  Si de lo contrario quiere agregar un tennant, presione 'tennant': ")
             if p=='tennant':
                 agregarEntidad("tennant")
-                a=1
                 continue
             p=int(p)
             if p in listaidtennants:
