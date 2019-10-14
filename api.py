@@ -48,8 +48,9 @@ def evaluarllamada(t):
         print ("ID's de supervisor:")
         cur.close()
         cur.execute("SELECT id from supervisores where id_tennant="+str(t))
-        
-                           
+        content=cur.fetchall()
+        for i in content:
+            print i[0]
 
                     
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
