@@ -48,10 +48,11 @@ def evaluarllamada(t):
     if subopcion==1:
         print ("ID's de supervisor:")
         cur.close()
+        cur=conn.cursor()
         cur.execute("SELECT id from supervisores where id_tennant="+str(t))
         content=cur.fetchall()
         for i in content:
-            print i[0]
+            print (i[0])
 
                     
         sup =input("Ingrese su ID de supervisor para poder continuar: ")
@@ -328,7 +329,6 @@ def tennantSelect(listaidtennants):
  Si de lo contrario quiere agregar un tennant, presione 'tennant': ")
             if p=='tennant':
                 agregarEntidad("tennant")
-                a=1
                 continue
             p=int(p)
             if p in listaidtennants:
@@ -598,7 +598,7 @@ def agregarEntidad(entidad,t=0):
             break
         if apellido=="0": return
         a=0
-    if idtennant=='0':
+    if t=='0':
         return 
     if entidad=="agente" or entidad=="tennant":
         optelefono="telefono"
