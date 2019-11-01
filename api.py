@@ -944,6 +944,7 @@ opciones=[['Ver llamadas',["i) Ver llamadas","ii) Agregar llamada","iii) Editar 
 ['Manejar agentes',["i) Agregar agente","ii) Editar agente","iii) Eliminar agente"]],\
 ['Manejar supervisores',["i) Agregar supervisor","ii) Editar informacion","iii) Eliminar supervisor"]],\
 ['Manejar tennant',["i) Editar tennant","ii) Eliminar tennant"]]]
+['Estadisticas',["i) Llamadas por tennant","ii) Evaluaciones","iii) Agentes","iv) Supervisores"]]]
 
 
 ciclo0()
