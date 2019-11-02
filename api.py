@@ -6,6 +6,8 @@ print ("-----------------------------Bienvenido al portal Crossnot--------------
 print ()
 
 
+
+
 def sql(accion,tabla,lista_columnas,lista_valores,condicion=0):
     columnavalores=""
     if accion.lower()=="update":
@@ -24,7 +26,31 @@ def sql(accion,tabla,lista_columnas,lista_valores,condicion=0):
         sentencia=accion+" from "+tabla+" where "+condicion
         return sentencia
 
-
+def estadistico(t):
+    conn=psycopg2.connect(database="grupo3",user="grupo3",password="eXVu6P",host= "201.238.213.114", port="54321")
+    cur = conn.cursor()
+    x=[]
+    y=[]
+    cur.execute("SELECT id FROM agente WHERE id_tennant="+t)
+    content=cur.fetchall()
+    l=[]
+    a=0
+    b=0
+    for i in content:
+        l.append(i[0])
+    for j in l:
+        cur.execute("SELECT saliente FROM llamadas WHERE id_agente="+str(j))
+        content=cur.fetchall()
+        for p in content:
+            if str(p[0]) == "True":
+                a+=1
+            if str(p[0]) == "False":
+                b+=1
+    pyplot.hist([a,b])
+    pyplot.show()
+    print ("Izquierda entrantes, Derecha salientes")
+    print ("Eje y 1=llamada realizada")
+    conn.close()
 
 
 def evaluarllamada(t):
@@ -841,6 +867,15 @@ def ejecutarConsulta(t,opcion,subopcion):
             print ("EditarTennant(t)")
         if subopcion==2:
             eliminarEntidad(t,"tennant")
+    if opcion==8:
+        if subopcion==1:
+            estadistico(t)
+        if subopcion==2:
+            print("evaluciones(t)")
+        if subopcion==3:
+            print("agentes(t)")
+        if subopcion==4:
+            print("supervisores(t)")
 
 
 
